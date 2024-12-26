@@ -7,7 +7,7 @@ import com.example.prello.card.dto.CardResponseDto;
 import com.example.prello.card.entity.Card;
 import com.example.prello.card.repository.CardRepository;
 import com.example.prello.comment.Comment;
-import com.example.prello.list.Deck;
+import com.example.prello.deck.entity.Deck;
 import com.example.prello.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package com.example.prello.card.entity;
 
 import com.example.prello.common.BaseEntity;
-import com.example.prello.list.Deck;
+import com.example.prello.deck.entity.Deck;
 import com.example.prello.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
