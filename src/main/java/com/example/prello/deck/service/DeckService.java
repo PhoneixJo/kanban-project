@@ -7,7 +7,6 @@ import com.example.prello.deck.dto.DeckRequestDto;
 import com.example.prello.deck.dto.DeckResponseDto;
 import com.example.prello.deck.entity.Deck;
 import com.example.prello.workspace.service.WorkspaceService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,9 @@ public class DeckService {
     //리스트 생성
     @Transactional
     public DeckResponseDto createDeck(Long workspaceId, Long boardId, DeckRequestDto dto) {
-        Board board = checkPathVariable(workspaceId, boardId);
+        checkPathVariable(workspaceId, boardId);
+
+        Board board = boardService.findByIdOrElseThrow(boardId);
 
         Deck deck = Deck.builder()
                 .title(dto.getTitle())
@@ -41,7 +42,7 @@ public class DeckService {
 
     //리스트 제목 수정
     @Transactional
-    public DeckResponseDto updateDeckTitle(Long workspaceId, Long boardId, Long id, @Valid DeckRequestDto dto) {
+    public DeckResponseDto updateDeckTitle(Long workspaceId, Long boardId, Long id, DeckRequestDto dto) {
         checkPathVariable(workspaceId, boardId);
 
         Deck findDeck = findByIdOrElseThrow(id);
@@ -52,7 +53,7 @@ public class DeckService {
 
     //리스트 순서 수정
     @Transactional
-    public DeckResponseDto updateDexkOrder(Long workspaceId, Long boardId, Long id, @Valid DeckRequestDto dto) {
+    public DeckResponseDto updateDeckOrder(Long workspaceId, Long boardId, Long id, DeckRequestDto dto) {
         checkPathVariable(workspaceId, boardId);
 
         Deck findDeck = findByIdOrElseThrow(id);
@@ -100,11 +101,11 @@ public class DeckService {
     }
 
     //workspace, board 검증 및 board 반환
-    private Board checkPathVariable(Long workspaceId, Long boardId) {
+    private void checkPathVariable(Long workspaceId, Long boardId) {
         //workspace 검증
         workspaceService.findByIdOrElseThrow(workspaceId);
 
         //board 검증
-        return boardService.findByIdOrElseThrow(boardId);
+        boardService.findByIdOrElseThrow(boardId);
     }
 }

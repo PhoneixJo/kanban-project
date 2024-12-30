@@ -20,7 +20,7 @@ import java.util.List;
 public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
-    SessionUtils sessionUtils;
+    private final SessionUtils sessionUtils;
 
     // 워크스페이스 생성
     @Transactional

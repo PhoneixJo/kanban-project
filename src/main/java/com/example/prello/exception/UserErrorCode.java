@@ -1,11 +1,11 @@
-package com.example.prello.user.enums;
+package com.example.prello.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum UserErrorCode {
-    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
+public enum UserErrorCode implements ExceptionType{
+    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다."),
     DELETED_ACCOUNT(HttpStatus.BAD_REQUEST, "탈퇴한 이메일은 사용할 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "찾을 수 없는 유저입니다.");
@@ -16,5 +16,10 @@ public enum UserErrorCode {
     UserErrorCode(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
         this.message = message;
+    }
+
+    @Override
+    public String getName() {
+        return this.name();
     }
 }

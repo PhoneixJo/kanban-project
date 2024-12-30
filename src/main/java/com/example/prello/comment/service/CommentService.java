@@ -64,7 +64,7 @@ public class CommentService {
     //댓글 id로 조회
     public Comment findByIdOrElseThrow(Long id) {
         return commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("리스트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
     }
 
     //workspace, board 검증 및 board 반환
