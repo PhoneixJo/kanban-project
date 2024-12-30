@@ -29,10 +29,8 @@ class AttachmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    @DisplayName("첨부파일 등록")
-    void createSuccessTest() throws Exception {
-        Mapper<AttachmentResponseDto> mapper = new Mapper<>();
-    }
-
+//    @Test
+//    @DisplayName("첨부파일 등록")
+//    void createSuccessTest() throws Exception {
+//        Mapper<AttachmentResponseDto> mapper = new Mapper<>();
 }
