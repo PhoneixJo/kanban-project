@@ -30,8 +30,8 @@ public class BoardController {
             @PathVariable Long workspaceId,
             @PathVariable Long id,
             @RequestBody BoardRequestDto boardRequestDto
-    ){
-        BoardResponseDto boardResponseDto = boardService.updateBoard(workspaceId,id, boardRequestDto);
+    ) {
+        BoardResponseDto boardResponseDto = boardService.updateBoard(workspaceId, id, boardRequestDto);
         return new ResponseEntity<>(boardResponseDto, HttpStatus.OK);
     }
 
@@ -40,7 +40,7 @@ public class BoardController {
     public ResponseEntity<BoardResponseDto> getBoard(
             @PathVariable Long workspaceId,
             @PathVariable Long id
-    ){
+    ) {
         BoardResponseDto boardResponseDto = boardService.getBoard(workspaceId, id);
         return new ResponseEntity<>(boardResponseDto, HttpStatus.OK);
     }
@@ -50,7 +50,7 @@ public class BoardController {
     public ResponseEntity<String> deleteBoard(
             @PathVariable Long workspaceId,
             @PathVariable Long id
-    ){
+    ) {
         String message = boardService.deleteBoard(workspaceId, id);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

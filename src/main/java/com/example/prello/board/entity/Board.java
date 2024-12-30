@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -21,7 +23,8 @@ public class Board extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workspace_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "workspace_id", nullable = false)
     private Workspace workspace;
 
     private String title;
@@ -31,12 +34,14 @@ public class Board extends BaseEntity {
 
     private String bg_image;
 
-    public Board() {}
+    public Board() {
+    }
 
-    public Board(String title, String bg_color, String bg_image) {
+    public Board(String title, String bg_color, String bg_image, Workspace workspace) {
         this.title = title;
         this.bg_color = bg_color;
         this.bg_image = bg_image;
+        this.workspace = workspace;
     }
 
     public Board update(String title, String bg_color, String bg_image) {

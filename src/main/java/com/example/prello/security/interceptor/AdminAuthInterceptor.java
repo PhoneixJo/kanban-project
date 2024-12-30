@@ -1,5 +1,7 @@
 package com.example.prello.security.interceptor;
 
+import com.example.prello.exception.CustomException;
+import com.example.prello.exception.UserErrorCode;
 import com.example.prello.user.enums.Auth;
 import com.example.prello.common.SessionName;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,9 +23,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         Auth auth = (Auth) session.getAttribute(SessionName.USER_AUTH);
 
         if (auth != Auth.ADMIN) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, " ADMIN 권한이 필요합니다."
-            );
+            throw new CustomException(UserErrorCode.FORBIDDEN_ADMIN);
         }
 
         return true;

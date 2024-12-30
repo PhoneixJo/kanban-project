@@ -45,9 +45,9 @@ public class Deck extends BaseEntity {
     }
 
     //순서 업데이트
-    public void updateDeckOrder(int order) {
+    public void updateDeckOrder(int newOrder) {
         if (order >= 0) {
-            this.order = order;
+            this.order = newOrder;
         }
     }
 }

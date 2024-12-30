@@ -2,6 +2,7 @@ package com.example.prello.deck.controller;
 
 import com.example.prello.deck.dto.DeckRequestDto;
 import com.example.prello.deck.dto.DeckResponseDto;
+import com.example.prello.deck.dto.DeckUpdateRequestDto;
 import com.example.prello.deck.service.DeckService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,36 +29,36 @@ public class DeckController {
     }
 
     //리스트 제목 수정
-    @PutMapping("/{listId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<DeckResponseDto> updateDeckTitle(
             @PathVariable Long workspaceId,
             @PathVariable Long boardId,
             @PathVariable Long id,
-            @Valid @RequestBody DeckRequestDto dto) {
+            @Valid @RequestBody DeckUpdateRequestDto dto) {
 
              DeckResponseDto deckResponseDto = deckService.updateDeckTitle(workspaceId, boardId, id, dto);
              return new ResponseEntity<>(deckResponseDto, HttpStatus.OK);
     }
 
     //리스트 순서 수정
-    @PutMapping("/{listId}/order")
+    @PatchMapping("/{id}/order")
     public ResponseEntity<DeckResponseDto> updateDeckOrder(
             @PathVariable Long workspaceId,
             @PathVariable Long boardId,
             @PathVariable Long id,
-            @Valid @RequestBody DeckRequestDto dto) {
+            @Valid @RequestBody DeckUpdateRequestDto dto) {
 
-            DeckResponseDto deckResponseDto = deckService.updateDeckTitle(workspaceId, boardId, id, dto);
+            DeckResponseDto deckResponseDto = deckService.updateDeckOrder(workspaceId, boardId, id, dto);
             return new ResponseEntity<>(deckResponseDto, HttpStatus.OK);
     }
     //리스트 삭제
-    @DeleteMapping("/{listId}")
-    public ResponseEntity<DeckResponseDto> deleteDeck(
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteDeck(
             @PathVariable Long workspaceId,
             @PathVariable Long boardId,
             @PathVariable Long id) {
 
             deckService.deleteDeck(workspaceId, boardId, id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("삭제되었습니다.", HttpStatus.OK);
     }
 }

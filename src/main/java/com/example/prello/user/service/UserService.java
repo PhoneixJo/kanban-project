@@ -1,13 +1,14 @@
 package com.example.prello.user.service;
 
 import com.example.prello.common.SessionName;
-import com.example.prello.exception.UserErrorCode;
+import com.example.prello.exception.CustomException;
 import com.example.prello.member.repository.MemberRepository;
 import com.example.prello.user.dto.DeleteRequestDto;
 import com.example.prello.user.dto.LoginRequestDto;
 import com.example.prello.user.dto.SignUpRequestDto;
 import com.example.prello.user.dto.UserResponseDto;
 import com.example.prello.user.entity.User;
+import com.example.prello.exception.UserErrorCode;
 import com.example.prello.user.repository.UserRepository;
 import com.example.prello.common.PasswordEncoder;
 import com.example.prello.workspace.dto.WorkspacePermissionDto;
@@ -33,9 +34,9 @@ public class UserService {
         Optional<User> findUser = userRepository.findByEmail(requestDto.getEmail());
         if(findUser.isPresent()) {
             if (findUser.get().getDeletedAt() != null) {
-                throw new IllegalArgumentException(UserErrorCode.DELETED_ACCOUNT.getMessage());
+                throw new CustomException(UserErrorCode.DELETED_ACCOUNT);
             }
-            throw new IllegalArgumentException(UserErrorCode.DUPLICATED_EMAIL.getMessage());
+            throw new CustomException(UserErrorCode.DUPLICATED_EMAIL);
         }
 
         String encodedPassword = PasswordEncoder.encode(requestDto.getPassword());
@@ -46,14 +47,19 @@ public class UserService {
     }
 
     public User login(LoginRequestDto requestDto) {
+
         User findUser = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(()-> new IllegalArgumentException(UserErrorCode.NOT_FOUND_USER.getMessage()));
+                .orElseThrow(()-> new CustomException(UserErrorCode.NOT_FOUND_USER));
 
         if(findUser.getDeletedAt()!=null) {
-            throw new IllegalArgumentException(UserErrorCode.DELETED_ACCOUNT.getMessage());
+            throw new CustomException(UserErrorCode.DELETED_ACCOUNT);
         }
         if(!PasswordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
-            throw new IllegalArgumentException(UserErrorCode.INVALID_PASSWORD.getMessage());
+            throw new CustomException(UserErrorCode.INVALID_PASSWORD);
+        }
+
+        if (session.getAttribute(SessionName.USER_ID) != null) {
+            throw new CustomException(UserErrorCode.ALREADY_LOGGED_IN);
         }
 
         session.setAttribute(SessionName.USER_ID, findUser.getId());
@@ -70,7 +76,7 @@ public class UserService {
         User findUser = findByIdOrElseThrow(userId);
 
         if(!PasswordEncoder.matches(requestDto.getPassword(), findUser.getPassword())){
-            throw new IllegalArgumentException(UserErrorCode.INVALID_PASSWORD.getMessage());
+            throw new CustomException(UserErrorCode.INVALID_PASSWORD);
         }
 
         findUser.deleteSoftly();
@@ -79,11 +85,11 @@ public class UserService {
 
     public User findByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
     }
 
     public User findUserByEmailOrElseThrow(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일로 사용자를 찾을 수 없습니다: " + email));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_BY_EMAIL));
     }
 }

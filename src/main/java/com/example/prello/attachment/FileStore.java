@@ -1,6 +1,5 @@
 package com.example.prello.attachment;
 
-import com.example.prello.attachment.entity.Attachment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,34 +10,33 @@ import java.util.UUID;
 @Component
 public class FileStore {
 
-    public String getFullPath(String fileName) {
-        return "C:/prello/" + fileName;
+    /**
+     * 서버 내 파일 저장 경로 반환
+     *
+     * @return 파일 저장 경로
+     */
+    public String getDestinationFileUrl() {
+        return "C:/Prello";
     }
 
     /**
      * 단일 파일 저장
      *
      * @param multipartFile 저장할 파일
-     * @return 파일 엔티티
+     * @return 저장 파일명
      * @throws IOException File 로 변환 실패
      */
-    public Attachment storeFile(MultipartFile multipartFile) throws IOException {
-        if (multipartFile.isEmpty()) {
-            return null;
-        }
+    public String storeFile(MultipartFile multipartFile) throws IOException {
 
         String originalFilename = multipartFile.getOriginalFilename();
         String storeFileName = createStoreFileName(originalFilename);
 
-        String fileUrl = getFullPath(storeFileName);
-        multipartFile.transferTo(new File(fileUrl));
+        File destinationFolder = new File(getDestinationFileUrl());
 
-        return Attachment.builder()
-                .uploadFileName(originalFilename)
-                .storeFileName(storeFileName)
-                .fileUrl(fileUrl)
-                .fileType(findExt(originalFilename))
-                .build();
+        destinationFolder.mkdirs();
+
+        multipartFile.transferTo(new File(destinationFolder, storeFileName));
+        return storeFileName;
     }
 
     /**
@@ -59,7 +57,7 @@ public class FileStore {
      * @param originalFilename 원본 파일명
      * @return 파일 확장자
      */
-    private String findExt(String originalFilename) {
+    public String findExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf('.');
         return originalFilename.substring(pos + 1);
     }

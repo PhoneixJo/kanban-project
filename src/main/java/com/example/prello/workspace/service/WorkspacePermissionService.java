@@ -33,7 +33,10 @@ public class WorkspacePermissionService {
             throw new IllegalStateException("워크스페이스 권한 정보를 세션에서 찾을 수 없습니다. 워크스페이스 ID: " + workspaceId);
         }
 
-        if (permission.getAuth().ordinal() < requiredAuth.ordinal()) {
+        System.out.println("세션에 저장된 권한: " + permission.getAuth());
+        System.out.println("검증할 권한: " + requiredAuth);
+
+        if (!permission.getAuth().hasPermission(requiredAuth)) {
             throw new IllegalStateException("필요한 권한이 부족합니다. 워크스페이스 ID: " + workspaceId);
         }
     }

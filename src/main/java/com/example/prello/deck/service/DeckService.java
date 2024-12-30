@@ -2,10 +2,13 @@ package com.example.prello.deck.service;
 
 import com.example.prello.board.entity.Board;
 import com.example.prello.board.service.BoardService;
+import com.example.prello.deck.dto.DeckUpdateRequestDto;
 import com.example.prello.deck.repository.DeckRepository;
 import com.example.prello.deck.dto.DeckRequestDto;
 import com.example.prello.deck.dto.DeckResponseDto;
 import com.example.prello.deck.entity.Deck;
+import com.example.prello.exception.CustomException;
+import com.example.prello.exception.DeckErrorCode;
 import com.example.prello.workspace.service.WorkspaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,9 +31,11 @@ public class DeckService {
 
         Board board = boardService.findByIdOrElseThrow(boardId);
 
+        int newOrder = deckRepository.findMaxOrderByBoardId(boardId).orElse(-1) + 1;
+
         Deck deck = Deck.builder()
                 .title(dto.getTitle())
-                .order(0)
+                .order(newOrder)
                 .board(board)
                 .build();
 
@@ -42,7 +47,7 @@ public class DeckService {
 
     //리스트 제목 수정
     @Transactional
-    public DeckResponseDto updateDeckTitle(Long workspaceId, Long boardId, Long id, DeckRequestDto dto) {
+    public DeckResponseDto updateDeckTitle(Long workspaceId, Long boardId, Long id, DeckUpdateRequestDto dto) {
         checkPathVariable(workspaceId, boardId);
 
         Deck findDeck = findByIdOrElseThrow(id);
@@ -53,19 +58,29 @@ public class DeckService {
 
     //리스트 순서 수정
     @Transactional
-    public DeckResponseDto updateDeckOrder(Long workspaceId, Long boardId, Long id, DeckRequestDto dto) {
+    public DeckResponseDto updateDeckOrder(Long workspaceId, Long boardId, Long id, DeckUpdateRequestDto dto) {
         checkPathVariable(workspaceId, boardId);
 
         Deck findDeck = findByIdOrElseThrow(id);
         int currentOrder = findDeck.getOrder();
         int newOrder = dto.getOrder();
 
-        //order값 변경이 없을떄
+        int maxOrder = deckRepository.findMaxOrderByBoardId(boardId).orElse(0);
+        if (newOrder > maxOrder) {
+            newOrder = maxOrder;
+        }
+
+        if (newOrder < 0) {
+            newOrder = 0;
+        }
+
+        // order값 변경이 없을떄
         if (currentOrder == newOrder) {
             return DeckResponseDto.toDto(findDeck);
         }
 
-        //order값이 변경 되었을때
+        // order값이 변경 되었을때
+
         if(newOrder > currentOrder) {
             List<Deck> deckUpdate = deckRepository.findDecksInOrderRange(boardId, currentOrder + 1, newOrder);
 
@@ -81,7 +96,6 @@ public class DeckService {
         }
 
         findDeck.updateDeckOrder(newOrder);
-
         return DeckResponseDto.toDto(findDeck);
     }
 
@@ -97,7 +111,7 @@ public class DeckService {
     //리스트 id로 조회
     public Deck findByIdOrElseThrow(Long id) {
         return deckRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("리스트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(DeckErrorCode.DECK_NOT_FOUND));
     }
 
     //workspace, board 검증 및 board 반환

@@ -36,7 +36,7 @@ public class SessionController {
         return "세션이 정상적으로 조회되었습니다.";
     }
 
-    @GetMapping("/workspace")
+    @GetMapping("/session/workspace")
     public ResponseEntity<List<WorkspacePermissionDto>> getWorkspacePermissions() {
         List<WorkspacePermissionDto> permissions = sessionUtils.getWorkspacePermissions();
         return ResponseEntity.ok(permissions);

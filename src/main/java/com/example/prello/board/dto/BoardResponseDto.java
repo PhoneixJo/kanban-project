@@ -1,16 +1,20 @@
 package com.example.prello.board.dto;
 
 import com.example.prello.board.entity.Board;
+import com.example.prello.deck.dto.DeckResponseWithCardsDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
 public class BoardResponseDto {
+
+    private final Long workspaceId;
 
     private final Long id;
 
@@ -24,14 +28,18 @@ public class BoardResponseDto {
 
     private final LocalDateTime updatedAt;
 
-    public static BoardResponseDto toDto(Board board) {
+    private final List<DeckResponseWithCardsDto> decks;
+
+    public static BoardResponseDto toDto(Board board, List<DeckResponseWithCardsDto> deckDtos) {
         return new BoardResponseDto(
+                board.getWorkspace().getId(),
                 board.getId(),
                 board.getTitle(),
                 board.getBg_color(),
                 board.getBg_image(),
                 board.getCreatedAt(),
-                board.getUpdatedAt()
+                board.getUpdatedAt(),
+                deckDtos
         );
     }
 }

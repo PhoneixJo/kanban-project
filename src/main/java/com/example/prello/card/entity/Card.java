@@ -6,6 +6,8 @@ import com.example.prello.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +22,8 @@ public class Card extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "list_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "deck_id")
     private Deck deck;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,13 +40,6 @@ public class Card extends BaseEntity {
     private LocalDateTime endAt;
 
     public Card(){}
-
-//    public Card(Deck deck, String title, String description, LocalDateTime endAt) {
-//        this.deck = deck;
-//        this.title = title;
-//        this.description = description;
-//        this.endAt = endAt;
-//    }
 
     /**
      * 담당자 추가

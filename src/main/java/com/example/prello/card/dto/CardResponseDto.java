@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 @RequiredArgsConstructor
 public class CardResponseDto {
 

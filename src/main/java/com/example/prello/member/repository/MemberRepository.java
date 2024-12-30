@@ -30,5 +30,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT new com.example.prello.workspace.dto.WorkspacePermissionDto(m.workspace.id, m.auth) " +
             "FROM Member m WHERE m.user.id = :userId")
     List<WorkspacePermissionDto> findWorkspacePermissionsByUserId(@Param("userId") Long userId);
-
 }

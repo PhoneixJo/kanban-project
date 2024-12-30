@@ -1,5 +1,7 @@
 package com.example.prello.member.service;
 
+import com.example.prello.exception.CustomException;
+import com.example.prello.exception.MemberErrorCode;
 import com.example.prello.member.auth.MemberAuth;
 import com.example.prello.member.repository.MemberRepository;
 import com.example.prello.member.dto.MemberRequestDto;
@@ -34,14 +36,18 @@ public class MemberService {
     // todo 세션에서 유저정보 확인 후 권한 체크 필요
     // todo 인증 인가 로직 수정 필요 (세션 사용필요)
     @Transactional
-    public MemberResponseDto updateMemberAuth(Long workspaceId, Long id, MemberRequestDto memberRequestDto) throws IllegalAccessException {
+    public MemberResponseDto updateMemberAuth(Long workspaceId, Long id, @Valid MemberRequestDto memberRequestDto) {
         Workspace workspace = workspaceService.findByIdOrElseThrow(workspaceId);
 
         Long userId = sessionUtils.getLoginUserId();
         workspacePermissionService.validateWorkspaceOwner(workspaceId, userId);
 
         Member member = findByIdWithUserOrElseThrow(id);
-        MemberAuth currentAuth = member.getAuth();
+        MemberAuth newAuth = member.getAuth();
+        if (newAuth == null) {
+            throw new CustomException(MemberErrorCode.AUTH_EMPTY);
+        }
+
         member.updateMemberAuth(memberRequestDto.getAuth());
 
         sessionUtils.updateWorkspacePermission(id, MemberAuth.WORKSPACE);
@@ -55,6 +61,11 @@ public class MemberService {
     public String addWorkspaceMember(Long workspaceId, @Valid MemberRequestDto memberRequestDto) {
         Long userId = sessionUtils.getLoginUserId();
 
+        String email = memberRequestDto.getEmail();
+        if (email == null || email.isBlank()) {
+            throw new CustomException(MemberErrorCode.AUTH_EMPTY);
+        }
+
         workspacePermissionService.validateWorkspaceOwner(workspaceId, userId);
 
         Workspace workspace = workspaceService.findByIdOrElseThrow(workspaceId);
@@ -63,7 +74,7 @@ public class MemberService {
 
         boolean isAlreadyMember = memberRepository.existsByUserIdAndWorkspaceId(user.getId(), workspaceId);
         if (isAlreadyMember) {
-            throw new IllegalStateException("이미 워크스페이스의 멤버입니다.");
+            throw new CustomException(MemberErrorCode.MEMBER_ALREADY_EXISTS);
         }
 
         Member member = Member.builder()
@@ -95,13 +106,13 @@ public class MemberService {
     // member id 확인
     public Member findMemberByIdOrElseThrow(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     // member id, user id 함께 확인 (fetch Join)
     private Member findByIdWithUserOrElseThrow(Long id) {
         return memberRepository.findByMemberIdWithUser(id)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     private List<Member> getMembersByWorkspaceId(Long workspaceId) {

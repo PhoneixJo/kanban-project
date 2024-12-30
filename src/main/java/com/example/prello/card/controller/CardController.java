@@ -5,6 +5,8 @@ import com.example.prello.card.dto.CardDetailResponseDto;
 import com.example.prello.card.dto.CardRequestDto;
 import com.example.prello.card.dto.CardResponseDto;
 import com.example.prello.card.service.CardService;
+import com.example.prello.notification.SlackService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class CardController {
 
     private final CardService cardService;
+
+    private final SlackService slackService;
 
     /**
      * 카드 생성
@@ -53,10 +57,12 @@ public class CardController {
             @PathVariable Long boardId,
             @PathVariable Long deckId,
             @PathVariable Long id,
+            HttpServletRequest request,
             @RequestBody CardRequestDto dto
     ) {
 
         CardResponseDto cardResponseDto = cardService.updateCard(workspaceId, boardId, deckId, id, dto);
+        slackService.sendSlackNotification("카드에 변경사항이 있습니다.", request, "워크스페이스 id: " + workspaceId + cardResponseDto.getTitle());
         return new ResponseEntity<>(cardResponseDto, HttpStatus.OK);
     }
 

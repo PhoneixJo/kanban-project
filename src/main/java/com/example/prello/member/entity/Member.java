@@ -1,6 +1,7 @@
 package com.example.prello.member.entity;
 
 import com.example.prello.common.BaseEntity;
+import com.example.prello.exception.CustomException;
 import com.example.prello.member.auth.MemberAuth;
 import com.example.prello.user.entity.User;
 import com.example.prello.workspace.entity.Workspace;
@@ -10,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -24,10 +27,12 @@ public class Member extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="user_id", nullable=false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="workspace_id", nullable=false)
     private Workspace workspace;
 
@@ -37,7 +42,7 @@ public class Member extends BaseEntity {
 
     public Member() {}
 
-    public void updateMemberAuth(MemberAuth auth) throws IllegalAccessException {
+    public void updateMemberAuth(MemberAuth auth) {
         this.auth.validateAuthChange(auth);
         this.auth = auth;
     }

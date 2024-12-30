@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -20,6 +22,7 @@ public class Attachment extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "card_id")
     private Card card;
 
@@ -34,13 +37,6 @@ public class Attachment extends BaseEntity {
     private String fileType;
 
     public Attachment() {
-    }
-
-    public Attachment(String uploadFileName, String storeFileName, String fileUrl, String fileType) {
-        this.uploadFileName = uploadFileName;
-        this.storeFileName = storeFileName;
-        this.fileUrl = fileUrl;
-        this.fileType = fileType;
     }
 
     public void addAttachmentToCard(Card card) {

@@ -1,25 +1,24 @@
 package com.example.prello.card.service;
 
 import com.example.prello.board.service.BoardService;
-import com.example.prello.card.dto.CardAssigneesRequestDto;
-import com.example.prello.card.dto.CardDetailResponseDto;
-import com.example.prello.card.dto.CardRequestDto;
-import com.example.prello.card.dto.CardResponseDto;
+import com.example.prello.card.dto.*;
 import com.example.prello.card.entity.Card;
 import com.example.prello.card.repository.CardRepository;
 import com.example.prello.comment.entity.Comment;
+import com.example.prello.comment.repository.CommentRepository;
+import com.example.prello.comment.service.CommentService;
 import com.example.prello.deck.entity.Deck;
 import com.example.prello.deck.service.DeckService;
 import com.example.prello.user.entity.User;
 import com.example.prello.user.service.UserService;
 import com.example.prello.workspace.service.WorkspaceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,6 +31,8 @@ public class CardService {
     private final BoardService boardService;
     private final DeckService deckService;
     private final UserService userService;
+    private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
 
     /**
@@ -42,14 +43,7 @@ public class CardService {
     @Transactional
     public CardResponseDto createCard(Long workspaceId, Long boardId, Long deckId, CardRequestDto dto) {
         checkPathVariable(workspaceId, boardId, deckId);
-        // TODO: 유의미한 findDeck 로 수정
-        Deck findDeck = new Deck();
-        // deckService.findByIdOrElseThrow(deckId);
-
-//        // TODO - 회의: 서비스 방식
-//        if (dto.getEndAt().isBefore(LocalDateTime.now())) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "마감일은 현재 시간 이전일 수 없습니다.");
-//        }
+        Deck findDeck = deckService.findByIdOrElseThrow(deckId);
 
         Card card = Card.builder()
                 .deck(findDeck)
@@ -73,7 +67,7 @@ public class CardService {
     @Transactional
     public CardResponseDto updateCard(Long workspaceId, Long boardId, Long deckId, Long cardId, CardRequestDto dto) {
         checkPathVariable(workspaceId, boardId, deckId);
-        Card findCard = findByIdOrElseThrow(cardId);
+        Card findCard = cardRepository.findByIdOrElseThrow(cardId);
         findCard.updateCard(dto.getTitle(), dto.getDescription(), dto.getEndAt());
 
         return CardResponseDto.toDto(findCard);
@@ -87,13 +81,30 @@ public class CardService {
      */
     public CardDetailResponseDto findCard(Long workspaceId, Long boardId, Long deckId, Long id) {
         checkPathVariable(workspaceId, boardId, deckId);
-        Card findCard = findByIdOrElseThrow(id);
+        Card findCard = cardRepository.findByIdOrElseThrow(id);
 
-        // TODO: 댓글 찾기
-        List<Comment> comments = new ArrayList<>();
+        List<Comment> comments = commentRepository.findLatestCommentsByCardId(id);
 
         return new CardDetailResponseDto(findCard, comments);
     }
+
+    public Page<CardSearchResponseDto> findBySearch(Long workspaceId, Long boardId, String title, String description,
+                                                    LocalDateTime endAt, String assigneeName, Pageable pageable) {
+
+        workspaceService.findByIdOrElseThrow(workspaceId);
+        Page<Card> cardPage = cardRepository.findBySearch(boardId, title, description, endAt, assigneeName, pageable);
+
+        if (!cardPage.getContent().isEmpty()) {
+            Card firstCard = cardPage.getContent().get(0);
+         }
+
+        Page<CardSearchResponseDto> cards = cardPage
+                .map(card -> new CardSearchResponseDto(card, commentService.findByCardId(card.getId())));
+
+        return cards;
+    }
+
+
 
     /**
      * 카드 삭제 서비스 메서드
@@ -103,10 +114,9 @@ public class CardService {
     @Transactional
     public void deleteCard(Long workspaceId, Long boardId, Long deckId, Long id) {
         checkPathVariable(workspaceId, boardId, deckId);
-        Card findCard = findByIdOrElseThrow(id);
+        Card findCard = cardRepository.findByIdOrElseThrow(id);
 
         cardRepository.delete(findCard);
-        // TODO - 회의: 논리 삭제?
     }
 
     /**
@@ -117,30 +127,17 @@ public class CardService {
     @Transactional
     public void updateAssignees(Long workspaceId, Long boardId, Long deckId, Long id, CardAssigneesRequestDto dto) {
         checkPathVariable(workspaceId, boardId, deckId);
-        Card findCard = findByIdOrElseThrow(id);
+        Card findCard = cardRepository.findByIdOrElseThrow(id);
 
         User findUser = userService.findByIdOrElseThrow(dto.getUserId());
 
         findCard.addAssignees(findUser);
     }
 
-    /**
-     * Card id로 Card 를 찾아 반환, 없을 시 Throw
-     *
-     * @param id 카드 식별자
-     * @return id에 해당하는 Card
-     */
-    public Card findByIdOrElseThrow(Long id) {
-        return cardRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
     // TODO: 검증 로직 메서드화
     private void checkPathVariable(Long workspaceId, Long boardId, Long deckId) {
-        // TODO: 해당 service 단의 find 메서드로 바꾸기
-        //  deckId 검증
         workspaceService.findByIdOrElseThrow(workspaceId);
         boardService.findByIdOrElseThrow(boardId);
-        // deckService.findByIdOrElseThrow(deckId);
+        deckService.findByIdOrElseThrow(deckId);
     }
 }

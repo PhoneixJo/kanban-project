@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DeckRepository extends JpaRepository<Deck, Long> {
 
@@ -14,4 +15,9 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
             @Param("boardId") Long boardId,
             @Param("startOrder") int startOrder,
             @Param("endOrder") int endOrder);
+
+    List<Deck> findByBoardId(Long boardId);
+
+    @Query("SELECT MAX(d.order) FROM Deck d WHERE d.board.id = :boardId")
+    Optional<Integer> findMaxOrderByBoardId(@Param("boardId") Long boardId);
 }
