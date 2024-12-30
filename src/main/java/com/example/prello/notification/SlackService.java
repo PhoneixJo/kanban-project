@@ -44,7 +44,7 @@ public class SlackService {
     }
 
     /**
-     * 슬랙 메시지 전송
+     * 슬랙 메시지 전송.
      **/
     private Attachment generateSlackAttachment(HttpServletRequest request, String msg) {
         String requestTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now());
