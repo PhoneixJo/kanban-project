@@ -1,6 +1,6 @@
 # 🎮 Prello 프로젝트 🎮
-### [💻 Prello 프로젝트 - Prello 작성 내용 바로가기 ](https://github.com/Newbiekk-kkh/GameTalk/tree/master/src/main/java/com/example/gametalk)
 ### [📓 Prello 프로젝트 - Prello 작성 노션 바로가기](https://www.notion.so/teamsparta/1582dc3ef514814b839ccb431ab82bc5)
+### [📓 Prello 프로젝트 - Prello POSTMAN 바로가기](https://documenter.getpostman.com/view/39379332/2sAYJ7fJos)
 ### [📓 Prello 프로젝트 - ec2 Swagger API Test 바로가기](http://13.209.241.90:8080/swagger-ui/index.html#/)
 ### [📓 Prello 프로젝트 - ec2 health check 바로가기](http://13.209.241.90:8080/health)
 
