@@ -5,6 +5,7 @@ import com.example.prello.card.dto.CardDetailResponseDto;
 import com.example.prello.card.dto.CardRequestDto;
 import com.example.prello.card.dto.CardResponseDto;
 import com.example.prello.card.service.CardService;
+import com.example.prello.common.SessionName;
 import com.example.prello.notification.SlackService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -58,11 +59,12 @@ public class CardController {
             @PathVariable Long deckId,
             @PathVariable Long id,
             HttpServletRequest request,
+            @SessionAttribute(name = SessionName.USER_ID) Long userId,
             @RequestBody CardRequestDto dto
     ) {
 
         CardResponseDto cardResponseDto = cardService.updateCard(workspaceId, boardId, deckId, id, dto);
-        slackService.sendSlackNotification("카드에 변경사항이 있습니다.", request, "워크스페이스 id: " + workspaceId + cardResponseDto.getTitle());
+        slackService.sendSlackNotification(userId, "카드에 변경사항이 있습니다.", request, "워크스페이스 id: " + workspaceId + cardResponseDto.getTitle());
         return new ResponseEntity<>(cardResponseDto, HttpStatus.OK);
     }
 

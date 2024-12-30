@@ -3,6 +3,7 @@ package com.example.prello.comment.controller;
 import com.example.prello.comment.dto.CommentRequestDto;
 import com.example.prello.comment.dto.CommentResponseDto;
 import com.example.prello.comment.service.CommentService;
+import com.example.prello.common.SessionName;
 import com.example.prello.notification.SlackService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,10 +29,11 @@ public class CommentController {
             @PathVariable Long deckId,
             @PathVariable Long cardId,
             HttpServletRequest request,
+            @SessionAttribute(name = SessionName.USER_ID) Long userId,
             @Valid @RequestBody CommentRequestDto dto) {
 
         CommentResponseDto commentResponseDto = commentService.createComment(workspaceId, boardId, deckId, cardId, dto);
-        slackService.sendSlackNotification("새 댓글이 작성되었습니다.", request, commentResponseDto.getContent());
+        slackService.sendSlackNotification(userId, "새 댓글이 작성되었습니다.", request, commentResponseDto.getContent());
         return new ResponseEntity<>(commentResponseDto, HttpStatus.CREATED);
     }
 

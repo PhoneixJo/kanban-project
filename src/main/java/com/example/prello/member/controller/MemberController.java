@@ -1,5 +1,6 @@
 package com.example.prello.member.controller;
 
+import com.example.prello.common.SessionName;
 import com.example.prello.member.dto.MemberRequestDto;
 import com.example.prello.member.dto.MemberResponseDto;
 import com.example.prello.member.service.MemberService;
@@ -38,9 +39,10 @@ public class MemberController {
     public ResponseEntity<String> addWorkspaceMember(
             @PathVariable Long workspaceId,
             HttpServletRequest request,
+            @SessionAttribute(name = SessionName.USER_ID) Long userId,
             @Valid @RequestBody MemberRequestDto memberRequestDto) {
         String message = memberService.addWorkspaceMember(workspaceId, memberRequestDto);
-        slackService.sendSlackNotification("워크스페이스에 멤버가 추가되었습니다.", request, message);
+        slackService.sendSlackNotification(userId, "워크스페이스에 멤버가 추가되었습니다.", request, message);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
