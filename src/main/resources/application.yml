@@ -29,3 +29,14 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+### health check ###
+management:
+  endpoints:
+    web:
+      base-path: /  # 모든 Actuator 엔드포인트의 기본 경로 설정
+      exposure:
+        include: health  # 노출할 엔드포인트 지정
+  endpoint:
+    health:
+      show-details: always  # 헬스 체크의 세부 정보를 항상 표시

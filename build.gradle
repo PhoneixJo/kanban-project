@@ -46,6 +46,9 @@ dependencies {
     // test
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.assertj:assertj-core'
+
+    // health check
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 }
 
 tasks.named('test') {
