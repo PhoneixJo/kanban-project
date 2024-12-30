@@ -42,3 +42,14 @@
 
 ## 📅 ERD 다이어그램
 ![image](https://github.com/user-attachments/assets/da86f03f-ef9f-43cb-b68e-002df4001ca3)
+
+## 개발 환경
+- Java 17
+- Spring boot 3.4.1
+- Gradle 8.11.1
+- MySQL 8.0.40
+- AWS ec2 ubuntu22.04
+- AWS RDS mysql 8.0.39
+- Docker
+- Git Action
+Git Action
