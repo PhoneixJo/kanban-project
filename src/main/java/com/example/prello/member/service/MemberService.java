@@ -112,5 +112,6 @@ public class MemberService {
     public List<WorkspacePermissionDto> getWorkspacePermissionsByUserId(Long userId) {
         return memberRepository.findWorkspacePermissionsByUserId(userId);
 
+
     }
 }
