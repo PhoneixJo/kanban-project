@@ -111,5 +111,6 @@ public class MemberService {
     // 사용자와 관련된 워크스페이스 권한 정보를 반환
     public List<WorkspacePermissionDto> getWorkspacePermissionsByUserId(Long userId) {
         return memberRepository.findWorkspacePermissionsByUserId(userId);
+
     }
 }

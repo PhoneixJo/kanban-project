@@ -1,13 +1,13 @@
 package com.example.prello.user.service;
 
 import com.example.prello.common.SessionName;
+import com.example.prello.exception.UserErrorCode;
 import com.example.prello.member.repository.MemberRepository;
 import com.example.prello.user.dto.DeleteRequestDto;
 import com.example.prello.user.dto.LoginRequestDto;
 import com.example.prello.user.dto.SignUpRequestDto;
 import com.example.prello.user.dto.UserResponseDto;
 import com.example.prello.user.entity.User;
-import com.example.prello.user.enums.UserErrorCode;
 import com.example.prello.user.repository.UserRepository;
 import com.example.prello.common.PasswordEncoder;
 import com.example.prello.workspace.dto.WorkspacePermissionDto;
