@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: Prello
+  profiles:
+    active: local
+    include: test
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  datasource:
+    url: jdbc:h2:mem:~/test
+    username: root
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    generate-ddl: 'false'
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: 'true'
+        format_sql: 'true'
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
+### Swagger ###
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+### Slack ###
+webhook:
+  slack:
+    url: localhost8080
+
+### health check ###
+management:
+  endpoints:
+    web:
+      base-path: /  # 모든 Actuator 엔드포인트의 기본 경로 설정
+      exposure:
+        include: health  # 노출할 엔드포인트 지정
+  endpoint:
+    health:
+      show-details: always  # 헬스 체크의 세부 정보를 항상 표시

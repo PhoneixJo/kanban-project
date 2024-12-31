@@ -18,12 +18,11 @@ import static com.slack.api.webhook.WebhookPayloads.payload;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class SlackService {
 
     private final Slack slackClient = Slack.getInstance();
 
-    @Value("${slack.webhook.url}")
+    @Value("${webhook.slack.url}")
     private String webhookUrl;
 
     // 슬랙 알림 보내는 메서드
